@@ -6,17 +6,17 @@
 // @author       You
 // @match        http://tampermonkey.net/scripts.php?locale=en
 // @include      http://*fallenlondon.storynexus.com/Gap/Load*
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
-// @require      https://raw.githubusercontent.com/lodash/lodash/3.8.0/lodash.js
+// @require      http://code.jquery.com/jquery-1.11.3.min.js
 // @require      https://github.com/pouchdb/pouchdb/releases/download/6.3.4/pouchdb-6.3.4.min.js
+// @require      https://raw.githubusercontent.com/lodash/lodash/3.8.0/lodash.js
+// @require http://stringjs.com/string.js
+// @require https://raw.githubusercontent.com/jackmoore/colorbox/master/jquery.colorbox-min.js
+// @grant        none
 // ==/UserScript==
-//look @ this https://github.com/wstrinz/exceptional_companion/blob/fea3ca285785e9c6ec1959f6f639da52b4fb21fe/fl_scraper.js
 
 
-(function() {
-    'use strict';
+(function ($, undefined) {
+  $(function () {
 
     window.dbOperations = {
         updateOrIgnoreBranch: function(dbBranch, scraped) {
@@ -184,14 +184,14 @@
 
             var itemAmt = function(branch, target, direction){
                 direction = direction || "gained";
-                res = _.find(branch.results, function(res){ return hasItem(res, target, direction) })
+                res = _.find(branch.results, function(res){ return hasItem(res, target, direction); });
                 return _.find(res.items, function(i){
                     return (i.name == target && i.direction == direction);
                 }).count[1];
             };
 
             branchDb.query(function (doc, emit) {
-                if(_.any(doc.results, function(r){ return hasItem(r, target)})){
+                if(_.any(doc.results, function(r){ return hasItem(r, target);})){
                     /* emit(itemAmt(doc, target)); */
                     emit(true);
                 } else {
@@ -204,12 +204,12 @@
                     console.log('none found');
                 }
                 else {
-                    best = _.sortBy(result.rows, function(r){ return itemAmt(r.doc, target) }).reverse()
+                    best = _.sortBy(result.rows, function(r){ return itemAmt(r.doc, target); }).reverse();
 
                     _.each(_.range(nToShow), function(i) {
                         if(best[i])
                             console.log('#' + i + ' best: ' + itemAmt(best[i].doc, target), best[i].doc);
-                    })
+                    });
                 }
 
             }).catch(function (err) {
@@ -430,7 +430,7 @@
             $('input[value="TRY THIS AGAIN"]').click();
         },
         chooseStorylet: function(name){
-            $j('div.storylet:contains("' + name + '")').find('div.go input').click();
+            $('div.storylet:contains("' + name + '")').find('div.go input').click();
         },
         enhancePage: function(){
             fl.linkAttrs();
@@ -465,7 +465,7 @@
                         eventDb.get(String(eventId)).then(function(dbEvt) {
                             if(dbEvt.preferredChoice){
                                 if(dbEvt.preferredChoice == "discard"){
-                                    discardEl = $j('#cards li').has("input[onclick='beginEvent(" + eventId + ");']").children('input[value="DISCARD"]');
+                                    discardEl = $('#cards li').has("input[onclick='beginEvent(" + eventId + ");']").children('input[value="DISCARD"]');
                                     $(discardEl).click();
                                     fl.util.waitForAjax().then(function() {
                                         console.log("discard", dbEvt);
@@ -473,13 +473,13 @@
                                     });
                                 }
                                 else {
-                                    cardEl = $j('#cards li a').has("input[onclick='beginEvent(" + eventId + ");']").children('input');
+                                    cardEl = $('#cards li a').has("input[onclick='beginEvent(" + eventId + ");']").children('input');
                                     $(cardEl).click();
                                     fl.util.waitForAjax().then(function() {
                                         fl.optThenChoose(dbEvt.preferredChoice).then(function(){
                                             fl.util.waitForAjax().then(function() {
                                                 console.log("onwards!");
-                                                $j('input[value="ONWARDS!"]').click();
+                                                $('input[value="ONWARDS!"]').click();
                                                 fl.util.waitForAjax().then(function(){
                                                     resolve({acted: true, reason: "picked " + dbEvt.preferredChoice + " for " + dbEvt.title + " (" + dbEvt._id + ")"});
                                                 });
@@ -530,11 +530,11 @@
                 });
             };
 
-            if($j('#cards li a').length > 0){
+            if($('#cards li a').length > 0){
                 return actOnAvailableCards();
             }
-            else if($j('#cardDeckLink')[0]){
-                $j('#cardDeckLink').click();
+            else if($('#cardDeckLink')[0]){
+                $('#cardDeckLink').click();
                 return actOnAvailableCards();
             }
             else{
@@ -551,9 +551,9 @@
                 }
                 else {
                     fl.util.waitForAjax().then(function(){
-                        if(fl.scraper.visibleCards().length < 3 && $j('#cardDeckLink')[0]){
+                        if(fl.scraper.visibleCards().length < 3 && $('#cardDeckLink')[0]){
                             if(!dontDraw){
-                                $j('#cardDeckLink').click();
+                                $('#cardDeckLink').click();
                                 fl.util.waitForAjax().then(fl.autoCards);
                             }
                             else {
@@ -597,6 +597,9 @@
     fl.scraper = {
         eventTitle: function () {
             return $('div.storylet_flavour_text h3').text().trim();
+        },
+        eventText: function (){
+            return $('div.storylet_flavour_text p').text().trim();
         },
         isResult: function () {
             return ($('.quality_update_box').length !== 0);
@@ -663,6 +666,9 @@
         branchTitle: function(id) {
             return $('#branch' + id + ' h5').text().trim();
         },
+        branchText: function(id) {
+            return $('#branch' + id + ' p').text().trim();
+        },
         updatedQualities: function () {
             var extractQuality, qualityEls;
             extractQuality = function (e) {
@@ -724,6 +730,7 @@
                 return [
                     {
                         title: fl.scraper.eventTitle(),
+                        text: fl.scraper.eventText(),
                         type: fl.scraper.resultType(),
                         qualities: fl.scraper.updatedQualities(),
                         items: fl.scraper.updatedItems()
@@ -734,10 +741,12 @@
         scrapeEvent: function() {
             return {
                 title: fl.scraper.eventTitle(),
+                text: fl.scraper.eventText(),
                 isTerminal: fl.scraper.isTerminal(),
                 isSocial: fl.scraper.isSocial(),
                 results: fl.scraper.getResult(),
-                branches: fl.scraper.branchesForEvent()
+                branches: fl.scraper.branchesForEvent(),
+                time: (new Date).getTime()
             };
         },
         scrapeBranch: function() {
@@ -745,7 +754,8 @@
                 isTerminal: fl.scraper.isTerminal(),
                 isSocial: fl.scraper.isSocial(),
                 subBranches: fl.scraper.branchesForEvent(),
-                results: fl.scraper.getResult()
+                results: fl.scraper.getResult(),
+                time: (new Date).getTime()
             };
         },
         currentLocation: function() {
@@ -780,28 +790,10 @@
     $ = jQuery = window.jQuery; //crap needed b/c of the grants for GM_XXXValue
 
     // EC stuff
-    /* commenting this stuff out b/c im doing local testing
-    var remoteDb; //set to address of a couchdb instance for replication
-    var remoteAddress = localStorage.getItem("remoteDb");
-    console.log("stored remote address is", remoteAddress);
-    if(remoteAddress == "local"){
-        console.log("using local db");
-    } else if(remoteAddress != "undefined") {
-        console.log("using remote db", remoteAddress);
-        remoteDb = remoteAddress;
-    } else {
-        var setAddress = prompt("Address for remote DB to sync with (leave blank use local db)");
-        if(setAddress){
-            localStorage.setItem("remoteDb", setAddress);
-            remoteDb = setAddress;
-        }
-        else {
-            localStorage.setItem("remoteDb", "local");
-            remoteDb = "local";
-        }
-    }*/
 
-    var remoteDb = "local"; // delete this if not doing local
+
+    var remoteDb = "http://104.131.90.64:5984"; // set it to an ip address (http://localhost:5984) if using remote or 'local' if not
+    console.log('here');
     var branchDb = new PouchDB('branches');
     var eventDb = new PouchDB('events');
     if(remoteDb){
@@ -822,9 +814,10 @@
             var branchId = $(form).find('input[name="branchId"]').val();
             if(branchId){
                 title = fl.scraper.branchTitle(branchId);
+                text =  fl.scraper.branchText(branchId);
                 var ret = oldFun(form);
                 fl.util.waitForAjax().then(function(){
-                    upsertBranch(title, parseInt(branchId));
+                    upsertBranch(title, text, parseInt(branchId));
                 });
                 return false;
             }
@@ -872,9 +865,9 @@
     window.upsertEvent = function(id) {
         return eventDb.get(String(id)).then(function(evt) {
             var plans;
-            plans = $j('.storylet').has('a.bookmark-plan.active');
+            plans = $('.storylet').has('a.bookmark-plan.active');
             if (!evt.preferredChoice && plans.length > 0) {
-                evt.preferredChoice = $j(plans[0]).find('h5').text();
+                evt.preferredChoice = $(plans[0]).find('h5').text();
                 return eventDb.put(evt).then(function(resp) {
                     return console.log('updated event preference', evt);
                 })["catch"](function(err) {
@@ -886,6 +879,7 @@
         })["catch"](function(err) {
             var newEvt;
             newEvt = fl.scraper.scrapeEvent();
+            console.log(newEvt);
             newEvt._id = String(id);
             return eventDb.put(newEvt).then(function(resp) {
                 return console.log('saved new event', resp);
@@ -895,10 +889,11 @@
         });
     };
 
-    window.upsertBranch = function(title, id) {
+    window.upsertBranch = function(title, text, id) {
         var scraped;
         scraped = fl.scraper.scrapeBranch();
         scraped.title = title;
+        scraped.text = text;
         scraped._id = String(id);
         return branchDb.get(String(id)).then(function(dbBranch) {
             return dbOperations.updateOrIgnoreBranch(dbBranch, scraped);
@@ -914,14 +909,14 @@
 
     capturePlanMarkers = function(eventId) {
         var storyletEls;
-        storyletEls = $j('.storylet').has('a.bookmark-plan');
-        return $j.each(storyletEls, function(indx, el) {
+        storyletEls = $('.storylet').has('a.bookmark-plan');
+        return $.each(storyletEls, function(indx, el) {
             var planEl;
-            planEl = $j(el).find('.bookmark-plan');
-            return $j(planEl).click(function() {
+            planEl = $(el).find('.bookmark-plan');
+            return $(planEl).click(function() {
                 return fl.util.waitForAjax().then(function() {
                     if (planEl.hasClass("active")) {
-                        return setEventChoice(String(eventId), $j(el).find('h5').text());
+                        return setEventChoice(String(eventId), $(el).find('h5').text());
                     } else {
                         return setEventChoice(String(eventId), void 0);
                     }
@@ -980,9 +975,10 @@
             if (params['branchid']) {
                 id = params['branchid'];
                 title = fl.scraper.branchTitle(id);
+                text =  fl.scraper.branchText(id);
                 oldFn.apply(window, arguments);
                 return fl.util.waitForAjax().then(function() {
-                    return upsertBranch(title, parseInt(id));
+                    return upsertBranch(title, text, parseInt(id));
                 });
             } else {
                 return oldFn.apply(window, arguments);
@@ -1139,7 +1135,7 @@
         },
         annotateEvent: function(eventId) {
             var applyAnnotation, cs, eventColors, eventEl;
-            eventEl = $j('.storylet').has("input[onclick='beginEvent(" + eventId + ");']");
+            eventEl = $('.storylet').has("input[onclick='beginEvent(" + eventId + ");']");
             cs = fl.annotator.branchColors;
             eventColors = {
                 Explored: cs.full,
@@ -1153,11 +1149,11 @@
                 annotationId = "#eventAnnotation" + eventId;
                 eventAnnotation = "<br><div id='eventAnnotation" + eventId + "'><div class='toggle'></div><div class='annotation'></div></div>";
                 $(eventEl).append(eventAnnotation);
-                $j(annotationId).find('.toggle').append(button).find('input').attr('style', "width: 95px !important; background-color: " + eventColors[shortD.completion] + ";").val(shortD.completion).click(function(e) {
-                    return $j(annotationId).find('.annotation').toggle();
+                $(annotationId).find('.toggle').append(button).find('input').attr('style', "width: 95px !important; background-color: " + eventColors[shortD.completion] + ";").val(shortD.completion).click(function(e) {
+                    return $(annotationId).find('.annotation').toggle();
                 });
-                $j(annotationId).find('.annotation').append("<div style='font-size: 0.8em; width: 400px;'>" + shortD.resultDesc + "</div>").append(annotationBody).hide();
-                return $j(annotationId).css('position', 'relative').css('left', '83px').css('bottom', '26px').css('margin-bottom', '-26px').css('width', '250px');
+                $(annotationId).find('.annotation').append("<div style='font-size: 0.8em; width: 400px;'>" + shortD.resultDesc + "</div>").append(annotationBody).hide();
+                return $(annotationId).css('position', 'relative').css('left', '83px').css('bottom', '26px').css('margin-bottom', '-26px').css('width', '250px');
             };
             if (eventEl) {
                 return eventDb.get(String(eventId)).then(function(dbEvt) {
@@ -1203,7 +1199,7 @@
         },
         annotateCard: function(eventId) {
             var cardEl;
-            cardEl = $j('#cards li').has("input[onclick='beginEvent(" + eventId + ");']");
+            cardEl = $('#cards li').has("input[onclick='beginEvent(" + eventId + ");']");
             if (cardEl) {
                 return eventDb.get(String(eventId)).then(function(dbEvt) {
                     return fl.annotator.getShortDescription(dbEvt).then(function(shortD) {
@@ -1244,7 +1240,7 @@
         var evtEls;
         evtEls = $('.storylet').has('input[onclick^="beginEvent"]');
         return _.map(evtEls, function(el) {
-            return $j(el).find('input[onclick^="beginEvent"]').attr('onclick').match(/beginEvent\((\d+)\)/)[1];
+            return $(el).find('input[onclick^="beginEvent"]').attr('onclick').match(/beginEvent\((\d+)\)/)[1];
         });
     };
 
@@ -1321,10 +1317,10 @@
             };
             actionsObj = {
                 id: 'ACTIONS',
-                natural: $j('#infoBarCurrentActions').text(),
+                natural: $('#infoBarCurrentActions').text(),
                 bonus: 0
             };
-            ret = _.map($j('span[id ^= "infoBarQLevel"].red').parent(), parseQuality);
+            ret = _.map($('span[id ^= "infoBarQLevel"].red').parent(), parseQuality);
             return ret = ret.concat(actionsObj);
         }
     };
@@ -1355,7 +1351,7 @@
 
     // END EC stuff
 
-
+    /*
     var i = 0; // set timer to 0
 
     function download(filename) {
@@ -1378,7 +1374,7 @@
         console.log('submit');
     });
 
-    $(".standard_btn").live('click', function() { { i=0; console.log('submit'); }}); // reset timer when clicking standard_btn. 
+    $(".standard_btn").live('click', function() { { i=0; console.log('submit'); }}); // reset timer when clicking standard_btn.
 
     document.addEventListener("DOMNodeInserted", function(e) {
         var element = e.target;
@@ -1400,5 +1396,6 @@
 
         console.log("appending title");
 
-    });
-})();
+    });*/
+  });
+})(window.jQuery.noConflict(true));
