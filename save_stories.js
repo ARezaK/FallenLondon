@@ -792,7 +792,7 @@
     // EC stuff
 
 
-    var remoteDb = "http://104.131.90.64:5984"; // set it to an ip address (http://localhost:5984) if using remote or 'local' if not
+    var remoteDb = ""; // set it to an ip address (http://localhost:5984) or e.g http://104.121.90.64:5984 if using remote or 'local' if not
     console.log('here');
     var branchDb = new PouchDB('branches');
     var eventDb = new PouchDB('events');
