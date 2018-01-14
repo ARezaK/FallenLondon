@@ -595,6 +595,9 @@
     };
 
     fl.scraper = {
+        accountName: function(){
+            return $('.subscription-username').text().trim().replace(/ /g,'');
+        },
         eventTitle: function () {
             return $('div.storylet_flavour_text h3').text().trim();
         },
@@ -795,10 +798,12 @@
     var remoteDb = ""; // set it to an ip address (http://localhost:5984) or e.g http://104.121.90.64:5984 or http://anna:secret@127.0.0.1:5984 if using remote or 'local' if not
     console.log('here');
     var branchDb = new PouchDB('branches');
-    var eventDb = new PouchDB('events');
+    var eventDb  = new PouchDB('events');
+    var charDB   = new PouchDB('char_' + fl.scraper.accountName());
     if(remoteDb){
         branchDb.sync(remoteDb + '/fl_branches/', {live: true, retry: true});
         eventDb.sync(remoteDb + '/fl_events/', {live: true, retry: true});
+        charDB.sync(remoteDb + 'char_' + fl.scraper.accountName(), {live: true, retry: true});
     }
     var qualitiesDb = new PouchDB('qualities');
 
