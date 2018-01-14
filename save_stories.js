@@ -623,6 +623,7 @@
                 return !!$('div.quality_update_box:contains("failed")')[0];
             },
             isInevitable: function () {
+                // these are cards or something that your gurantted to get a certain action out of it. there is no pass or fail
                 return this.isResult() && !(this.isSuccess() || this.isFail());
             },
             isLuck: function() {
