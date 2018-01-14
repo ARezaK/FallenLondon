@@ -796,7 +796,7 @@
 
 
     var remoteDb = ""; // set it to an ip address (http://localhost:5984) or e.g http://104.121.90.64:5984 or http://anna:secret@127.0.0.1:5984 if using remote or 'local' if not
-    console.log('here');
+    console.log('connected');
     var branchDb = new PouchDB('branches');
     var eventDb  = new PouchDB('events');
     var charDB   = new PouchDB('char_' + fl.scraper.accountName());
@@ -887,13 +887,17 @@
             console.log(newEvt);
             newEvt._id = String(id);
             return eventDb.put(newEvt).then(function(resp) {
+                //this is where i update my characters storlyine
+                var object_to_put = {'time': newEvt.time, 'pass_or_fail': newEvt.results[0].type, 'type': 'event', 'id_': String(id)};
+                charDB.put(object_to_put);
                 return console.log('saved new event', resp);
             })["catch"](function(err) {
                 return console.log('saving new event failed!', err);
             });
         });
     };
-
+    
+    //crap i dont use
     window.upsertBranch = function(title, text, id) {
         var scraped;
         scraped = fl.scraper.scrapeBranch();
@@ -905,13 +909,17 @@
         }, function(err) {
             console.log('missing branch ' + id, err);
             return branchDb.put(scraped).then(function(resp) {
+                //this is where i update my characters storlyine
+                var object_to_put = {'time': scraped.time, 'pass_or_fail': scraped.results[0].type, 'type': 'branch', 'id_': String(id)};
+                charDB.put(object_to_put);
                 return console.log('saved new branch', resp, 'with result', scraped.results[0]);
             }, function(err) {
                 return console.log('saving new branch failed!', err);
             });
         });
     };
-
+    
+    //crap i dont use
     capturePlanMarkers = function(eventId) {
         var storyletEls;
         storyletEls = $('.storylet').has('a.bookmark-plan');
