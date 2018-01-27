@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Org Chart</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        .org-chart table {
+            border-collapse: unset;
+        }
+        td.node.event {
+            border-color: #47afe0;
+            background-color: #f3e886;
+            background: -webkit-gradient(linear, left top, left bottom, from(#edf7ff), to(#f3e886));
+			width:200px !important;
+        }
+        td.branch.success {
+            border: 2px solid #62d867;
+            background-color: #6ace6e;
+            background: -webkit-gradient(linear, left top, left bottom, from(#ade66b), to(#bfe88f));
+        }
+        td.branch.fail {
+            border: 2px solid #f15a4f;
+            background-color: #e2675e;
+            background: -webkit-gradient(linear, left top, left bottom, from(#ea827b), to(#b9342a));
+        }
+        td.branch.fail.success {
+            border: 2px solid #f15a4f;
+            background: -webkit-gradient(linear, left top, left bottom, from(#f15a4f), to(#62d867));
+        }
+    </style>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="js/jquery.js"></script> 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="js/_index.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div id="chart_div" class="org-chart"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>
