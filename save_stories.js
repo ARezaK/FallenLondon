@@ -1368,53 +1368,6 @@
 
 
 
-        // END EC stuff
 
-        /*
-    var i = 0; // set timer to 0
-
-    function download(filename) {
-        if(i != 1){ //if timer is not 1 dont download
-            return;
-        }
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.documentElement.outerHTML));
-        element.setAttribute('download', filename);
-
-        element.style.display = 'none';
-        document.body.appendChild(element);
-
-        element.click();
-
-        document.body.removeChild(element);
-    }
-    document.addEventListener("submit", function(){ // reset timer when clicking submit
-        i=0;
-        console.log('submit');
-    });
-
-    $(".standard_btn").live('click', function() { { i=0; console.log('submit'); }}); // reset timer when clicking standard_btn.
-
-    document.addEventListener("DOMNodeInserted", function(e) {
-        var element = e.target;
-        var title = $("#mainContentViaAjax > div.storylet_flavour_text > h3");
-        if ($("#perhapsnotbtn").length > 0 || $('input[value="TRY THIS AGAIN"]').length >0 || $('input[value="ONWARDS!"]').length >0 ){ // means we have clicked a story
-            console.log("download ready");
-            i++; // start timer
-            var milliseconds = (new Date).getTime();
-
-            var content_ = $("#mainContentViaAjax").html();
-
-            var reg = /contentKey=(\d+)/;
-            var event_id = content_.match(reg)[1];
-
-            var filename = milliseconds + '-' + title.text().trim() + '-' + event_id + '-' +  '.html';
-            download(filename);
-            return;
-        }
-
-        console.log("appending title");
-
-    });*/
     });
 })(window.jQuery.noConflict(true));

@@ -1,8 +1,11 @@
 $(document).ready(function() {
     var dataSource = {};
-    var char = $.getJSON("char_sitbuttheadxx_copy.json");
-    var branch = $.getJSON("fl_branches.json");
-    var event = $.getJSON("fl_events.json");
+    var char = $.getJSON("char_sir_bannaseed.json");
+   // var branch = $.getJSON("fl_branches.json");
+    //var event = $.getJSON("fl_events.json");
+    //var char = $.getJSON("https://7fa23fe9-797d-4921-ba10-c9137162e8f5-bluemix.cloudant.com/char_sirbananaseed/_all_docs?include_docs=true");
+    var branch = $.getJSON("https://7fa23fe9-797d-4921-ba10-c9137162e8f5-bluemix.cloudant.com/fl_branches/_all_docs?include_docs=true");
+    var event = $.getJSON("https://7fa23fe9-797d-4921-ba10-c9137162e8f5-bluemix.cloudant.com/fl_events/_all_docs?include_docs=true");
     $tree = $("#primaryNav");
 
     $.when(char, branch, event).done(function(char, branch, event) {
@@ -60,9 +63,9 @@ $(document).ready(function() {
                     })[0];
 					console.log("_branchrow: ", _branchRow);
                     var branchIndex = rows.indexOf(_branchRow);
-					console.log(branchIndex);
+					console.log("branch index: ", branchIndex);
                     var branchRow = rows[branchIndex];
-					console.log(branchRow);
+					console.log("branch row: ", branchRow);
                     var pass_or_fail = charData.pass_or_fail;
 					console.log('pass or fail: ', pass_or_fail);
                     if (pass_or_fail == "success") {
